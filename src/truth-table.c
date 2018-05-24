@@ -8,7 +8,8 @@
 #define CHAR_SIZE (sizeof(char) * 8)
 
 bool variable_exists(char *variable, char **variables, size_t variable_length) {
-	for(size_t i = 0; i < variable_length; ++i) {
+	size_t i;
+	for(i = 0; i < variable_length; ++i) {
 		if(variables[i] == variable) {
 			return true;
 		}
@@ -85,7 +86,8 @@ void get_truth_table(struct truth_table *table, struct formular *formular) {
 bool truth_table_increment(struct truth_table *table) {
 	//increment sub configurations
 	//thus the first n - 1 variables starting from the back
-	for(size_t i = 0; i < table->configuration_length - 1; ++i) {
+	size_t i;
+	for(i = 0; i < table->configuration_length - 1; ++i) {
 		if((++table->current_configuration[table->configuration_length - 1 - i]) != 0) {
 			goto DONE;
 		}
@@ -105,7 +107,8 @@ DONE:;
 }
 
 void reset_configuration(struct truth_table *table) {
-	for(size_t i = 0; i < table->configuration_length; ++i) {
+	size_t i;
+	for(i = 0; i < table->configuration_length; ++i) {
 		table->current_configuration[i] = 0;
 	}
 }
@@ -118,7 +121,8 @@ bool get_variable_value(struct truth_table *table, size_t index) {
 
 size_t header_size(struct truth_table *table) {
 	size_t size = 0;
-	for(size_t i = 0; i < table->variables_length; ++i) {
+	size_t i;
+	for(i = 0; i < table->variables_length; ++i) {
 		size += 2; // "| "
 		size += strlen(table->variables[i]);
 		size += 1; // " "
@@ -131,7 +135,8 @@ size_t header_size(struct truth_table *table) {
 }
 
 void generate_header(struct truth_table *table, char *buffer) {
-	for(size_t i = 0; i < table->variables_length; ++i) {
+	size_t i;
+	for(i = 0; i < table->variables_length; ++i) {
 		buffer = append(buffer, "| ");
 		buffer = append(buffer, table->variables[i]);
 		buffer = append(buffer, " ");
@@ -145,7 +150,8 @@ void generate_header(struct truth_table *table, char *buffer) {
 }
 
 void generate_bar(struct truth_table *table, char *buffer) {
-	for(size_t i = 0; i < table->variables_length; ++i) {
+	size_t i;
+	for(i = 0; i < table->variables_length; ++i) {
 		buffer = append(buffer, "|-");
 		buffer = print_n(buffer, '-', strlen(table->variables[i]));
 		buffer = append(buffer, "-");
@@ -166,9 +172,11 @@ void print_truth_table(FILE *file, struct truth_table *table) {
 	printf("%s", buffer);
 
 	do {
-		for(size_t i = 0; i < table->variables_length; ++i) {
+		size_t i;
+		for(i = 0; i < table->variables_length; ++i) {
 			printf("| ");
-			for(unsigned char j = 0; j < strlen(table->variables[i]) - 1; ++j) {
+			unsigned char j;
+			for(j = 0; j < strlen(table->variables[i]) - 1; ++j) {
 				printf(" ");
 			}
 			printf("%d ", get_variable_value(table, i));

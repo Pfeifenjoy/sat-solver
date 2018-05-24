@@ -7,7 +7,8 @@ char *append(char *text1, char *text2) {
 }
 
 char *print_n(char *x, char c, size_t n) {
-	for(size_t i = 0; i < n; ++i) {
+	size_t i;
+	for(i = 0; i < n; ++i) {
 		x[i] = c;
 	}
 	return x + n;
