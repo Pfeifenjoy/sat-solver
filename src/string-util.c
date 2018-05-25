@@ -1,7 +1,7 @@
 #include "sat-solver/string-util.h"
 #include "string.h"
 
-char *append(char *text1, char *text2) {
+char *append(char *text1, const char *text2) {
 	strcpy(text1, text2);
 	return text1 + strlen(text2);
 }

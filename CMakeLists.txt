@@ -7,11 +7,25 @@ add_library(sat-solver
 	src/truth-table.c
 	src/formular.c
 	src/string-util.c
+	src/judgement.c
 )
 target_include_directories(sat-solver PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
+add_subdirectory(libs)
+target_link_libraries(sat-solver PRIVATE
+	trie
+)
+
+# Tests
+enable_testing()
+add_executable(truth-table test/truth-table.c)
+target_link_libraries(truth-table PRIVATE sat-solver)
+add_test(NAME truth-table COMMAND truth-table)
+add_executable(judgement test/judgement.c)
+target_link_libraries(judgement PRIVATE sat-solver)
+add_test(NAME judgement COMMAND judgement)
 
 # Install
 install(TARGETS sat-solver EXPORT SATSolverTargets
