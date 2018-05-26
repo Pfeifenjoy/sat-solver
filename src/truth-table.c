@@ -9,20 +9,17 @@
 #define CHAR_SIZE (sizeof(char) * 8)
 
 size_t header_size(
-		const struct formular *formular,
-		char **variables,
-		size_t variables_length
+		const unsigned char *spaces,
+		size_t spaces_length
 	) {
 	size_t size = 0;
 	size_t i;
-	for(i = 0; i < variables_length; ++i) {
+	for(i = 0; i < spaces_length; ++i) {
 		size += 2; // "| "
-		size += strlen(variables[i]);
+		size += spaces[i] + 1;
 		size += 1; // " "
 	}
-	size += 2; // "| "
-	size += formular_stringify_get_length(formular);
-	size += 3; // " |\n"
+	size += 2; // "|\n"
 	size += 1; // zero byte
 	return size;
 }
@@ -43,26 +40,67 @@ void generate_header(
 	char *formular_text = formular_stringify(formular);
 	buffer = append(buffer, formular_text);
 	free(formular_text);
-	buffer = append(buffer, " |\n");
-	*buffer = 0;
+	memcpy(buffer, " |\n", 4);
 }
 
 void generate_bar(
 		char *buffer,
-		char **variables,
-		size_t variables_length,
-		const struct formular *formular
+		unsigned char *spaces,
+		size_t spaces_length
 	) {
 	size_t i;
-	for(i = 0; i < variables_length; ++i) {
-		buffer = append(buffer, "|-");
-		buffer = print_n(buffer, '-', strlen(variables[i]));
-		buffer = append(buffer, "-");
+	for(i = 0; i < spaces_length; ++i) {
+		buffer = append(buffer, "|");
+		buffer = print_n(buffer, '-', spaces[i] + 3);
 	}
-	buffer = append(buffer, "|-");
-	buffer = print_n(buffer, '-', formular_stringify_get_length(formular));
-	buffer = append(buffer, "-|\n");
-	*buffer = 0;
+	memcpy(buffer, "|\n", 3);
+}
+
+void get_spaces(
+		const struct formular *formular,
+		char **variables,
+		size_t variables_length,
+		unsigned char **spaces,
+		size_t *spaces_length
+	) {
+	*spaces_length = variables_length + 1;
+	*spaces = malloc(*spaces_length * sizeof(unsigned char));
+
+	size_t i;
+	for(i = 0; i < variables_length; ++i) {
+		(*spaces)[i] = strlen(variables[i]) - 1;
+	}
+
+	(*spaces)[*spaces_length - 1] = formular_stringify_get_length(formular) - 1;
+}
+
+void fprint_truth_table_body(
+		FILE *out,
+		char *buffer,
+		size_t buffer_size,
+		const struct index_formular *formular,
+		struct index_judgement *judgement,
+		unsigned char *spaces,
+		size_t spaces_length
+	) {
+	do {
+		size_t i = 0;
+		size_t position = 0;
+		for(i = 0; i < spaces_length - 1; ++i) {
+			buffer[position++] = '|';
+			memset(buffer + position, ' ', spaces[i] + 1);
+			position += spaces[i] + 1;
+			buffer[position++] = index_judgement_get(judgement, i) ? '1' : '0';
+			buffer[position++] = ' ';
+		}
+		buffer[position++] = '|';
+		memset(buffer + position, ' ', spaces[spaces_length - 1] + 1);
+		position += spaces[spaces_length - 1] + 1;
+		buffer[position++] = index_judgement_eval(judgement, formular)
+			? '1' : '0';
+		memcpy(buffer + position, " |\n", 4);
+		fwrite(buffer, sizeof(char), buffer_size, out);
+	} while(index_judgement_next(judgement));
 }
 
 void fprint_truth_table(FILE *out, const struct formular *formular) {
@@ -71,45 +109,37 @@ void fprint_truth_table(FILE *out, const struct formular *formular) {
 	size_t variables_length;
 	formular_get_variables(formular, &variables, &variables_length);
 
-	struct index_formular_holder holder;
-	make_index_formular(&holder, formular);
-
-	struct index_judgement index_judgement;
-	index_judgement_init(&index_judgement, &holder);
+	//spaces
+	unsigned char *spaces;
+	size_t spaces_length;
+	get_spaces(formular, variables, variables_length, &spaces, &spaces_length);
 
 	//buffer
-	size_t buffer_size = header_size(formular, variables, variables_length);
+	size_t buffer_size = header_size(spaces, spaces_length);
 	char *buffer = (char *) malloc(buffer_size * sizeof(char));
+
+	//formular / judgement
+	struct index_formular_holder holder;
+	make_index_formular(&holder, formular);
+	struct index_judgement index_judgement;
+	index_judgement_init(&index_judgement, &holder);
 
 	//header
 	generate_header(buffer, variables, variables_length, formular);
 	fwrite(buffer, sizeof(char), buffer_size, out);
-	generate_bar(buffer, variables, variables_length, formular);
+	generate_bar(buffer, spaces, spaces_length);
 	fwrite(buffer, sizeof(char), buffer_size, out);
 
 	//body
-	do {
-		size_t i;
-		for(i = 0; i < variables_length; ++i) {
-			printf("| ");
-			unsigned char j;
-			for(j = 0; j < strlen(variables[i]) - 1; ++j) {
-				printf(" ");
-			}
-			printf("%d ", index_judgement_get(&index_judgement, i));
-		}
-		printf("| ");
-		for(size_t i = 0; i < formular_stringify_get_length(formular) - 1; ++i) {
-			printf(" ");
-		}
-		printf("%d |\n", index_judgement_eval(&index_judgement, holder.formulars));
+	fprint_truth_table_body(out, buffer, buffer_size, holder.formulars,
+			&index_judgement, spaces, spaces_length);
 
-	} while(index_judgement_next(&index_judgement));
-
+	//free
 	free(variables);
+	free(spaces);
+	free(buffer);
 	index_formular_free(&holder);
 	index_judgement_destroy(&index_judgement);
-	free(buffer);
 }
 
 void print_truth_table(const struct formular *table) {
