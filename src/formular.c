@@ -270,7 +270,8 @@ void index_formular_free(struct index_formular_holder *holder) {
 
 size_t index_formular_holder_highest_id(const struct index_formular_holder * holder) {
 	size_t max = 0;
-	for(size_t i = 0; i < holder->index_formular_length; ++i) {
+	size_t i;
+	for(i = 0; i < holder->index_formular_length; ++i) {
 		max = holder->formulars[i].type == LITERAL_FORMULAR
 			&& holder->formulars[i].value.literal > max ?
 			holder->formulars[i].value.literal : max;
