@@ -272,4 +272,5 @@ void test_index_judgement() {
 int main(const int argc, const char **argv) {
 	test_basic_judgement();
 	test_index_judgement();
+	return EXIT_SUCCESS;
 }
