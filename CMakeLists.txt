@@ -13,10 +13,7 @@ target_include_directories(sat-solver PUBLIC
 	$<INSTALL_INTERFACE:include>
 )
 add_subdirectory(libs)
-target_link_libraries(sat-solver PRIVATE
-	trie
-	logging
-)
+target_link_libraries(sat-solver PUBLIC trie)
 
 # Tests
 enable_testing()
