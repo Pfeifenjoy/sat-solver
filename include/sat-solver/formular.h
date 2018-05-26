@@ -5,15 +5,17 @@
 #include "stdbool.h"
 #include "trie/trie.h"
 
+enum formular_type {
+	VERUM_FORMULAR,
+	FALSUM_FORMULAR,
+	LITERAL_FORMULAR,
+	AND_FORMULAR,
+	OR_FORMULAR,
+	NEG_FORMULAR
+};
+
 struct formular {
-	enum {
-		VERUM_FORMULAR,
-		FALSUM_FORMULAR,
-		LITERAL_FORMULAR,
-		AND_FORMULAR,
-		OR_FORMULAR,
-		NEG_FORMULAR
-	} type;
+	enum formular_type type;
 	union {
 		char *literal;
 
@@ -43,14 +45,7 @@ void formular_get_variables(
 );
 
 struct index_formular {
-	enum {
-		VERUM_FORMULAR,
-		FALSUM_FORMULAR,
-		LITERAL_FORMULAR,
-		AND_FORMULAR,
-		OR_FORMULAR,
-		NEG_FORMULAR
-	} type;
+	enum formular_type type;
 	union {
 		size_t literal;
 
