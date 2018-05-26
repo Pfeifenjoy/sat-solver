@@ -3,7 +3,6 @@ project(sat-solver VERSION 0.0.1 LANGUAGES C)
 
 # Library
 add_library(sat-solver
-	src/sat-solver.c
 	src/truth-table.c
 	src/formular.c
 	src/string-util.c
@@ -16,13 +15,15 @@ target_include_directories(sat-solver PUBLIC
 add_subdirectory(libs)
 target_link_libraries(sat-solver PRIVATE
 	trie
+	logging
 )
 
 # Tests
 enable_testing()
 add_executable(truth-table test/truth-table.c)
-target_link_libraries(truth-table PRIVATE sat-solver)
-add_test(NAME truth-table COMMAND truth-table)
+target_link_libraries(truth-table PRIVATE sat-solver logging)
+add_test(NAME truth-table COMMAND truth-table
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test/artifacts/truth-table)
 add_executable(judgement test/judgement.c)
 target_link_libraries(judgement PRIVATE sat-solver)
 add_test(NAME judgement COMMAND judgement)

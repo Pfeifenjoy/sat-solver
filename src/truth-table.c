@@ -99,7 +99,7 @@ void fprint_truth_table_body(
 		buffer[position++] = index_judgement_eval(judgement, formular)
 			? '1' : '0';
 		memcpy(buffer + position, " |\n", 4);
-		fwrite(buffer, sizeof(char), buffer_size, out);
+		fwrite(buffer, sizeof(char), buffer_size - 1, out);
 	} while(index_judgement_next(judgement));
 }
 
@@ -126,9 +126,9 @@ void fprint_truth_table(FILE *out, const struct formular *formular) {
 
 	//header
 	generate_header(buffer, variables, variables_length, formular);
-	fwrite(buffer, sizeof(char), buffer_size, out);
+	fwrite(buffer, sizeof(char), buffer_size - 1, out);
 	generate_bar(buffer, spaces, spaces_length);
-	fwrite(buffer, sizeof(char), buffer_size, out);
+	fwrite(buffer, sizeof(char), buffer_size - 1, out);
 
 	//body
 	fprint_truth_table_body(out, buffer, buffer_size, holder.formulars,
