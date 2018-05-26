@@ -1,6 +1,3 @@
 [submodule "libs/trie.h"]
 	path = libs/trie.h
 	url = https://github.com/Pfeifenjoy/trie.h
-[submodule "libs/logging.h"]
-	path = libs/logging.h
-	url = https://github.com/Pfeifenjoy/logging.h
