@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 project(sat-solver VERSION 0.0.1 LANGUAGES C)
 
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${PROJECT_SOURCE_DIR}/dependencies/install)
+# Dependencies
+#find_package(trie.h REQUIRED)
+find_package(Logging REQUIRED)
+
 # Library
 add_library(sat-solver
 	src/truth-table.c
@@ -12,13 +17,12 @@ target_include_directories(sat-solver PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
-add_subdirectory(libs)
 target_link_libraries(sat-solver PUBLIC trie)
 
 # Tests
 enable_testing()
 add_executable(truth-table test/truth-table.c)
-target_link_libraries(truth-table PRIVATE sat-solver logging)
+target_link_libraries(truth-table PRIVATE sat-solver Logging::Logging)
 add_test(NAME truth-table COMMAND truth-table
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test/artifacts/truth-table)
 add_executable(judgement test/judgement.c)
