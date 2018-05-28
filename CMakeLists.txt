@@ -1,57 +1,53 @@
 cmake_minimum_required(VERSION 3.5)
-project(sat-solver VERSION 0.0.1 LANGUAGES C)
+project(SAT-Solver VERSION 0.0.1 LANGUAGES C)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${PROJECT_SOURCE_DIR}/dependencies/install)
 # Dependencies
-#find_package(trie.h REQUIRED)
+find_package(Trie REQUIRED)
 find_package(Logging REQUIRED)
 
 # Library
-add_library(sat-solver
+add_library(SAT-Solver
 	src/truth-table.c
 	src/formular.c
 	src/string-util.c
 	src/judgement.c
 )
-target_include_directories(sat-solver PUBLIC
+target_include_directories(SAT-Solver PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
-target_link_libraries(sat-solver PUBLIC trie)
+target_link_libraries(SAT-Solver PUBLIC Trie::Trie)
 
 # Tests
 enable_testing()
 add_executable(truth-table test/truth-table.c)
-target_link_libraries(truth-table PRIVATE sat-solver Logging::Logging)
+target_link_libraries(truth-table PRIVATE SAT-Solver Logging::Logging)
 add_test(NAME truth-table COMMAND truth-table
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test/artifacts/truth-table)
 add_executable(judgement test/judgement.c)
-target_link_libraries(judgement PRIVATE sat-solver)
+target_link_libraries(judgement PRIVATE SAT-Solver)
 add_test(NAME judgement COMMAND judgement)
 
 # Install
-install(TARGETS sat-solver EXPORT SATSolverTargets
+install(TARGETS SAT-Solver EXPORT SAT-SolverTargets
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION bin
 	INCLUDES DESTINATION include
 )
 install(DIRECTORY include/sat-solver DESTINATION include)
-install(EXPORT SATSolverTargets
-	FILE SATSolverTargets.cmake
-	NAMESPACE SATSolver::
-	DESTINATION lib/cmake/sat-solver
+install(EXPORT SAT-SolverTargets
+	FILE SAT-SolverTargets.cmake
+	NAMESPACE SAT-Solver::
+	DESTINATION lib/cmake/SAT-Solver
 )
 
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file(SATSolverConfigVersion.cmake
+write_basic_package_version_file("SAT-SolverConfigVersion.cmake"
+	VERSION ${SAT-Solver_VERSION}
 	COMPATIBILITY SameMajorVersion
 )
-
-install(FILES build/SATSolverConfigVersion.cmake
-	DESTINATION lib/cmake/sat-solver
-)
-
 #CPack
 set(CPACK_PACKAGE_CONTACT "arwed.mett@googlemail.com")
 
