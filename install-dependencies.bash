@@ -6,10 +6,6 @@ function install {
 	git clone --depth=1 $1
 	pushd $(basename $1)
 
-	if [ -e "install-dependencies.bash" ]; then
-		bash install-dependencies.bash
-	fi
-
 	mkdir -p build
 	pushd build
 	cmake -DCMAKE_INSTALL_PREFIX:PATH=../../../install ..
