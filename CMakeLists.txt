@@ -48,6 +48,12 @@ write_basic_package_version_file("SAT-SolverConfigVersion.cmake"
 	VERSION ${SAT-Solver_VERSION}
 	COMPATIBILITY SameMajorVersion
 )
+install(FILES
+	"SAT-SolverConfig.cmake"
+	"${CMAKE_CURRENT_BINARY_DIR}/SAT-SolverConfigVersion.cmake"
+	DESTINATION lib/cmake/SAT-Solver
+)
+
 #CPack
 set(CPACK_PACKAGE_CONTACT "arwed.mett@googlemail.com")
 
