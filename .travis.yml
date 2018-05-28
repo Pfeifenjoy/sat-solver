@@ -9,5 +9,4 @@ os:
 
 script:
     - mkdir build
-    - ./install-dependencies.bash
     - cd build && cmake ../  && cmake --build . && ctest --verbose .

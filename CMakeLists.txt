@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(SAT-Solver VERSION 0.0.1 LANGUAGES C)
 
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${PROJECT_SOURCE_DIR}/dependencies/install)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${PROJECT_BINARY_DIR}/dependencies/install)
+
 # Dependencies
+execute_process(COMMAND ../install-dependencies.bash)
 find_package(Trie REQUIRED)
 find_package(Logging REQUIRED)
 

@@ -10,7 +10,7 @@ function install {
 		bash install-dependencies.bash
 	fi
 
-	mkdir build
+	mkdir -p build
 	pushd build
 	cmake -DCMAKE_INSTALL_PREFIX:PATH=../../../install ..
 	make -j4
